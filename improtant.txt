@@ -1,0 +1,2 @@
+celery -A src worker --loglevel=info -P solo
+celery -A src beat -l info
