@@ -1,0 +1,13 @@
+# Database
+db.sqlite3
+
+# Environment variables
+.env
+
+# Python
+__pycache__
+*.pyc
+
+# Virtual environment
+venv/
+env/

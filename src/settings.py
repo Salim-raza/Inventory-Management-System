@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+from decouple import config
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-h8tm*k_w48fjkgq9l8^vl%f&1zif42h*$s8#$n_g*2-s9cu#6o'
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -138,8 +140,8 @@ REST_FRAMEWORK = {
 
 
 # Celery Configuration Options
-CELERY_BROKER_URL = 'redis://localhost:6379/0' 
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = config("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND")
 CELERY_TIMEZONE = "Asia/Dhaka"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
@@ -150,8 +152,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'rezasalim00011@gmail.com'
-EMAIL_HOST_PASSWORD = 'wixk kech vpcb facz' # Use an app password, not your main password
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD") # Use an app password, not your main password
 EMAIL_USE_SSL = False
 
 
@@ -175,8 +177,12 @@ SIMPLE_JWT = {
 
 
 CELERY_BEAT_SCHEDULE = {
-    'check-low-stock-every-1-minute': {
+    'check-low-stock-every-1-hour': {
         'task': 'inventory.tasks.low_stock_alert',
-        'schedule': 60.0,  
+        'schedule': 3600,  
     },
 }
+
+
+
+
