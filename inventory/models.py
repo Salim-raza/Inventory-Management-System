@@ -34,48 +34,27 @@ class Product(models.Model):
         value = f"{string1}-{self.name[:3].upper()}-{string2}"
         self.barcode = value
     
-    # def qrcode_generate(self, *args, **kwargs):
-    #     data = self.barcode
-    #     self.qr_code = qrcode.make(data)
-    #     self.qr_code = self.qr_code.resize((250, 250))
-    #     canvas = Image.new('RGB', (290, 290), 'white')
-    #     draw = ImageDraw.Draw(canvas)
-    #     canvas_width, canvas_height = canvas.size
-    #     qr_width, qr_height = self.qr_code.size
-    #     position = ((canvas_width - qr_width) // 2, (canvas_height - qr_height) // 2)
-    #     canvas.paste(self.qr_code, position)
-    #     canvas.paste(self.qr_code)
-    #     fname = f'qr_code-{self.name}'+'.png'
-    #     buffer = BytesIO()
-    #     canvas.save(buffer, 'PNG')
-    #     self.qr_code.save(fname, File(buffer), save=False)
-    #     canvas.close()
-    #     super().save(*args, **kwargs)
-    
     def qrcode_generate(self, *args, **kwargs):
         data = self.barcode
         qr_image = qrcode.make(data)
         qr_image = qr_image.resize((250, 250))
     
-        # Create canvas
+
         canvas = Image.new('RGB', (290, 290), 'white')
         canvas_width, canvas_height = canvas.size
         qr_width, qr_height = qr_image.size
         
-        # Center the QR code on canvas
+
         position = ((canvas_width - qr_width) // 2, (canvas_height - qr_height) // 2)
         canvas.paste(qr_image, position)
         
-        # Save to buffer
         fname = f'qr_code-{self.name}.png'
         buffer = BytesIO()
         canvas.save(buffer, 'PNG')
-        buffer.seek(0)  # Important: reset buffer position to beginning
+        buffer.seek(0)  
         
-        # Save to ImageField
+
         self.qr_code.save(fname, File(buffer), save=False)
-        
-        # Clean up
         canvas.close()
         
     def save(self, *args, **kwargs):
