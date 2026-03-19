@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     'accounts',
     'inventory',
-    'qr_code'
+    'qr_code', 
+    'dashboard'
 ]
 
 MIDDLEWARE = [

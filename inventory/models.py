@@ -129,11 +129,11 @@ class StockOut(models.Model):
     
     def save(self, *args, **kwargs):
 
-        if self.pk:  # update
+        if self.pk:  
             old = StockOut.objects.get(pk=self.pk)
             diff = self.quantity - old.quantity
             self.product.current_stock -= diff
-        else:  # create
+        else: 
             self.product.current_stock -= self.quantity
 
         self.total_price = self.quantity * self.unit_price
