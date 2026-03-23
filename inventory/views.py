@@ -213,12 +213,13 @@ def stock_out(request):
         low_stock_alert.delay()
         return Response({"message": "Stock Out Successfully"}, status=status.HTTP_200_OK)
     
+
 @swagger_auto_schema(
     method='PATCH',
     request_body= StockOutSerializers,
     responses={201: StockOutSerializers(many=False), 400: 'Bad Request'},
     operation_description="stock out"
-)      
+)   
 @api_view(["PATCH"])
 @permission_classes([IsAdminORManager | IsSales])
 @authentication_classes([JWTAuthentication])
