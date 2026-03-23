@@ -14,7 +14,7 @@ from .serializers import *
     method='post',
     request_body=CreateCategorySerializers,
     responses={201: CreateCategorySerializers(many=False), 400: 'Bad Request'},
-    operation_description="create a new user"
+    operation_description="create category"
 )
 @api_view(["POST"])
 @permission_classes([IsAdminORManager])
@@ -25,65 +25,73 @@ def create_category(request):
     serializers.save()
     return Response(serializers.data, status=status.HTTP_201_CREATED)
 
-
 @swagger_auto_schema(
-    method='post',
+    method='GET',
+    responses={200: ProductCreateSerializers(many=True)},
+    operation_description="get all product"
+)
+@swagger_auto_schema(
+    method='POST',
     request_body= ProductCreateSerializers,
     responses={201: ProductCreateSerializers(many=False), 400: 'Bad Request'},
     operation_description="create product"
 )
 @api_view(["GET", "POST"])
-@permission_classes([IsAdminORManager | IsSales])
+@permission_classes([IsAdminORManager, IsSales])
 @authentication_classes([JWTAuthentication])
 def product(request):
+    if request.method == "GET":
+        products = Product.objects.all()
+        serializer = ProductCreateSerializers(products, many=True)
+        return Response({"products": serializer.data}, status=status.HTTP_200_OK)
+    
     if request.method == "POST":
-        serializers = ProductCreateSerializers(data=request.data)
-        serializers.is_valid(raise_exception=True)
-        product = serializers.save()
+        serializer = ProductCreateSerializers(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        product = serializer.save()
         return Response({
             "product": ProductCreateSerializers(product).data 
         }, status=status.HTTP_201_CREATED)
     
     
-    if request.method == "GET":
-        products = Product.objects.all()
-        serializers = ProductCreateSerializers(products, many=True)
-        return Response({"products": serializers.data}, status=status.HTTP_200_OK)
+@swagger_auto_schema(
+    method='DELETE',
+    responses={200: 'Delete product', 404: 'Not Found'},
+    operation_description="delete product"  
+)
+@swagger_auto_schema(
+    method='PATCH',
+    request_body= UpdateProductSerializers,
+    responses={200: UpdateProductSerializers(many=False), 400: 'Bad Request'},
+    operation_description="update product"
+)
+@api_view(["PATCH", "DELETE"])
+@permission_classes([IsAdminORManager])
+@authentication_classes([JWTAuthentication])
+def update_delete(request, id):
+    if request.method == "PATCH":
+        product = get_object_or_404(Product, id=id)
+        serializers = UpdateProductSerializers(product, data=request.data, partial=True)
+        serializers.is_valid(raise_exception=True)
+        serializers.save()
+        return Response({"product": serializers.data}, status=status.HTTP_200_OK)
+
+    if request.method == "DELETE":
+        product = get_object_or_404(Product, id=id, owner=request.user)
+        product.delete()
+        return Response({"message": "product delete successfully ."}, status=status.HTTP_200_OK)
 
 
 @swagger_auto_schema(
-    method='patch',
-    request_body= UpdateProductSerializers,
-    responses={201: UpdateProductSerializers(many=False), 400: 'Bad Request'},
-    operation_description="update product"
+    method="GET",
+    responses={200: CreateWarehouseSerializers(many=True)},
+    operation_description="get all warehouse"
 )
-@api_view(["PATCH"])
-@permission_classes([IsAdminORManager])
-@authentication_classes([JWTAuthentication])
-def update(request, id):
-    product = get_object_or_404(Product, id=id)
-    serializers = UpdateProductSerializers(product, data=request.data, partial=True)
-    serializers.is_valid(raise_exception=True)
-    serializers.save()
-    return Response({"product": serializers.data}, status=status.HTTP_200_OK)
-
-
-
-@api_view(["DELETE"])
-@permission_classes([IsAdminORManager])
-@authentication_classes([JWTAuthentication])
-def delete(request, id):
-    product = get_object_or_404(Product, id=id, owner=request.user)
-    product.delete()
-    return Response({"message": "product delete successfully ."}, status=status.HTTP_200_OK)
-
-
-
 @swagger_auto_schema(
     method='POST',
     request_body= CreateWarehouseSerializers,
     responses={201: CreateWarehouseSerializers(many=False), 400: 'Bad Request'},
-    operation_description="update product"
+    operation_description="get and create warehouse"
 )
 @api_view(["GET", "POST"])
 @permission_classes([IsAdminORManager])
@@ -100,7 +108,17 @@ def warehouse(request):
         serializers.save()
         return Response({"message": "warehouser create successfully"}, status=status.HTTP_201_CREATED)
     
-
+@swagger_auto_schema(
+    method='PATCH',
+    request_body= UpdateWarehouseSerializers,
+    responses={201: UpdateWarehouseSerializers(many=False), 400: 'Bad Request'},
+    operation_description="update warehouse"
+)
+@swagger_auto_schema(
+    method='DELETE',
+    responses={200: "delete warehouse", 400: 'Bad Request'},
+    operation_description="delete warehouse"
+)
 @api_view(["PATCH", "DELETE"])
 @permission_classes([IsAdminORManager])
 @authentication_classes([JWTAuthentication])
@@ -118,8 +136,12 @@ def warehouser_modify(request, id):
         warehouse.delete()
         return Response({"message": "warehouse delete successful"}, status=status.HTTP_200_OK)
         
-        
-        
+@swagger_auto_schema(
+    method='POST',
+    request_body= StockInSerializers,
+    responses={201: StockInSerializers(many=False), 400: 'Bad Request'},
+    operation_description="stock in"
+)        
 @api_view(["POST"])
 @permission_classes([IsAdminORManager])
 @authentication_classes([JWTAuthentication])
@@ -134,7 +156,14 @@ def stock_in(request):
     return Response({"message": "stock in successfully", "stock_in": serializers.data}, status=status.HTTP_201_CREATED)
 
 
-@api_view(["PATCH", "DELETE"])
+
+@swagger_auto_schema(
+    method='PATCH',
+    request_body= StockUpdateSerializers,
+    responses={201: StockUpdateSerializers(many=False), 400: 'Bad Request'},
+    operation_description="stock_in update"
+)
+@api_view(["PATCH"])
 @permission_classes([IsAdminORManager])
 @authentication_classes([JWTAuthentication])
 def Stock_modify(request, id):
@@ -156,14 +185,20 @@ def Stock_modify(request, id):
             status=status.HTTP_200_OK
         )
     
-    if request.method == "DELETE":
-        stock = get_object_or_404(StockIn, id=id)
-        stock.delete()
-        return Response({"message": "stock delete successful"}, status=status.HTTP_200_OK)
-    
+@swagger_auto_schema(
+    method="GET",
+    responses={200: StockOutSerializers(many=True)},
+    operation_description="get all stock out"
+)
 
+@swagger_auto_schema(
+    method='POST',
+    request_body= StockOutSerializers,
+    responses={201: StockOutSerializers(many=False), 400: 'Bad Request'},
+    operation_description="stock out"
+)   
 @api_view(["GET", "POST"])
-@permission_classes([IsAdminORManager])
+@permission_classes([IsAdminORManager | IsSales])
 @authentication_classes([JWTAuthentication])
 def stock_out(request):
     if request.method == "GET":
@@ -178,9 +213,14 @@ def stock_out(request):
         low_stock_alert.delay()
         return Response({"message": "Stock Out Successfully"}, status=status.HTTP_200_OK)
     
-    
+@swagger_auto_schema(
+    method='PATCH',
+    request_body= StockOutSerializers,
+    responses={201: StockOutSerializers(many=False), 400: 'Bad Request'},
+    operation_description="stock out"
+)      
 @api_view(["PATCH"])
-@permission_classes([IsAdminORManager])
+@permission_classes([IsAdminORManager | IsSales])
 @authentication_classes([JWTAuthentication])
 def stock_out_update(request, id):
         stock_out = get_object_or_404(StockOut, id=id)

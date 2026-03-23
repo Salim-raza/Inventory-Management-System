@@ -5,8 +5,8 @@ from .views import *
 urlpatterns = [
     path("create_category/", create_category, name="create_category"),
     path("product/", product, name="product"),
-    path("update<int:id>/", update, name="update_product"),
-    path("delete<int:id>/", delete, name="delete"),
+    path("update<int:id>/", update_delete, name="update_product"),
+    path("delete<int:id>/", update_delete, name="delete"),
     path("warehouse/", warehouse, name="warehouse"),
     path("warehouser_modify/<int:id>/", warehouser_modify, name="warehouser_modify"),
     path("stock_in/", stock_in, name="stock_in"),
