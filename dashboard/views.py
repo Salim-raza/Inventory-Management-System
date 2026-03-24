@@ -4,12 +4,19 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from inventory.models import Product, StockIn, StockOut
 from rest_framework.response import Response
 from django.utils import timezone
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from django.db.models import F
 from accounts.permision import *
 from datetime import timedelta
 
 # Create your views here.
+
+@swagger_auto_schema(
+    method="GET",
+    responses= {200: ProductCreateSerializers(many=True)},
+    operation_description="all product count"
+)
 @api_view(["GET"])
 @permission_classes([IsAdmin])
 @authentication_classes([JWTAuthentication])
@@ -22,6 +29,11 @@ def all_product_count(request):
     }
     return Response(data, status=status.HTTP_200_OK)
 
+@swagger_auto_schema(
+    method="GET",
+    responses= {200: StockInSerializers(many=True)},
+    operation_description="all stock"
+)
 @api_view(["GET"])
 @permission_classes([IsAdminORManager])
 @authentication_classes([JWTAuthentication])
@@ -35,6 +47,12 @@ def all_stock(request):
     
     return Response(data, status=status.HTTP_200_OK)
 
+
+@swagger_auto_schema(
+    method="GET",
+    responses= {200: ProductCreateSerializers(many=True)},
+    operation_description="low stock product"
+)
 
 @api_view(["GET"])
 @permission_classes([IsAdminORManager])
@@ -52,7 +70,11 @@ def low_stock_product(request):
     
     return Response(data, status=status.HTTP_200_OK)
 
-
+@swagger_auto_schema(
+    method="GET",
+    responses= {200: StockInSerializers(many=True)},
+    operation_description="today stock in"
+)
 @api_view(["GET"])
 @permission_classes([IsAdminORManager])
 @authentication_classes([JWTAuthentication])
@@ -71,7 +93,11 @@ def today_stock_in(request):
     
     return Response(data, status=status.HTTP_200_OK)
 
-
+@swagger_auto_schema(
+    method="GET",
+    responses= {200: StockOutSerializers(many=True)},
+    operation_description="all stock out"
+)
 @api_view(["GET"])
 @permission_classes([IsAdminORManager])
 @authentication_classes([JWTAuthentication])
@@ -85,7 +111,11 @@ def all_stock_out(request):
      
      return Response(data , status=status.HTTP_200_OK)
 
-
+@swagger_auto_schema(
+    method="GET",
+    responses= {200: StockOutSerializers(many=True)},
+    operation_description="today stock out"
+)
 @api_view(["GET"])
 @permission_classes([IsAdminORManager])
 @authentication_classes([JWTAuthentication])
