@@ -74,7 +74,7 @@ def change_password(request):
     
     user = get_object_or_404(CustomUser, id=request.user.id)
     if user.check_password(serializers.validated_data["old_password"]):
-        user.set_password(serializers.validated_data["old_password"])
+        user.set_password(serializers.validated_data["new_password"])
         user.save()
         return Response({"message": "Password Change Successfully ."}, status=status.HTTP_200_OK)
     return Response({"message": "Invalid Old Password"}, status=status.HTTP_400_BAD_REQUEST)
