@@ -50,7 +50,4 @@ class OTP(models.Model):
     
     
     def is_expire(self):
-        print('create_at :', self.create_at)
-        print('is_expire :', timezone.now() + datetime.timedelta(minutes=5))
-        
         return self.create_at + timezone.now() + datetime.timedelta(minutes=5) > timezone.now()
