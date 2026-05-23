@@ -230,8 +230,3 @@ def stock_out_update(request, id):
         serializers.save()
         return Response({"message": "stock out update successful", "stock_out": serializers.data}, status=status.HTTP_200_OK)
         
-    
-    
-#
-
-
