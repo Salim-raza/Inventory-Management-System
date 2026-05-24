@@ -30,10 +30,8 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# <<<<<<< 677b412 (fixed allowed hosts)
-ALLOWED_HOSTS = ['*']
 
-# >>>>>>> 677b412 (fixed allowed hosts)
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
